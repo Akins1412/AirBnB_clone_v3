@@ -50,10 +50,34 @@ class DBStorage:
                     key = obj.__class__.__name__ + '.' + obj.id
                     new_dict[key] = obj
         return (new_dict)
+    
+    def get(self, cls, id):
+        """retrieves object of class with id"""
+        if cls and issubclass(cls, BaseModel):
+            return self.__session.query(cls).filter_by(id=id).first()
+        return None
+    
+
+    def count(self, cls=None):
+        """retrieves number of objects of class or all (if cls==None)"""
+        return sum(1 for _ in self.all(cls))
+
+    
 
     def new(self, obj):
         """add the object to the current database session"""
         self.__session.add(obj)
+
+        def get(self, cls, id):
+            """retrieves object of class with id"""
+        obj = None
+        if cls is not None and issubclass(cls, BaseModel):
+            obj = self.__session.query(cls).filter(cls.id == id).first()
+        return obj
+
+    def count(self, cls=None):
+        """retrieves number of objects of  class or all (if cls==None)"""
+        return len(self.all(cls))
 
     def save(self):
         """commit all changes of the current database session"""
@@ -74,3 +98,4 @@ class DBStorage:
     def close(self):
         """call remove() method on the private session attribute"""
         self.__session.remove()
+
